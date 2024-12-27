@@ -1,0 +1,24 @@
+name: "Stormglass Sea Temperature"
+version: "1.0.0"
+slug: "stormglass_temperature"
+description: "Display sea temperature data from Stormglass API"
+url: "https://github.com/yourusername/ha-stormglass"
+arch:
+  - armhf
+  - armv7
+  - aarch64
+  - amd64
+  - i386
+startup: application
+boot: auto
+ingress: true
+panel_icon: mdi:waves
+init: false
+options:
+  api_key: ""
+  latitude: "0"
+  longitude: "0"
+schema:
+  api_key: str
+  latitude: str
+  longitude: str
