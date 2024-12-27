@@ -42,13 +42,14 @@ const MapSelector = ({ onLocationSelect }: MapSelectorProps) => {
     <div className="space-y-4">
       <div className="w-full h-[400px] rounded-lg border overflow-hidden">
         <MapContainer
-          center={[0, 0]}
+          center={L.latLng(0, 0)}
           zoom={2}
           style={{ height: '100%', width: '100%' }}
+          scrollWheelZoom={true}
         >
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           <MapEvents onLocationSelect={handleMapClick} />
           {position && <Marker position={position} />}
