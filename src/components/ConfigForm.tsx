@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import MapSelector from "./MapSelector";
 
 interface ConfigFormProps {
   onSave: (config: { apiKey: string; latitude: string; longitude: string }) => void;
@@ -34,11 +33,6 @@ const ConfigForm = ({ onSave }: ConfigFormProps) => {
     });
   };
 
-  const handleLocationSelect = (lat: string, lng: string) => {
-    setLatitude(lat);
-    setLongitude(lng);
-  };
-
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
@@ -59,16 +53,30 @@ const ConfigForm = ({ onSave }: ConfigFormProps) => {
             />
           </div>
           
-          <MapSelector onLocationSelect={handleLocationSelect} />
-          
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Selected Latitude</label>
-              <Input value={latitude} readOnly />
+              <label htmlFor="latitude" className="text-sm font-medium">
+                Latitude
+              </label>
+              <Input
+                id="latitude"
+                type="text"
+                value={latitude}
+                onChange={(e) => setLatitude(e.target.value)}
+                placeholder="Enter latitude"
+              />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Selected Longitude</label>
-              <Input value={longitude} readOnly />
+              <label htmlFor="longitude" className="text-sm font-medium">
+                Longitude
+              </label>
+              <Input
+                id="longitude"
+                type="text"
+                value={longitude}
+                onChange={(e) => setLongitude(e.target.value)}
+                placeholder="Enter longitude"
+              />
             </div>
           </div>
 
