@@ -9,7 +9,7 @@ const fetchSeaTemperature = async (config: {
   longitude: string;
 }) => {
   const response = await fetch(
-    `https://api.stormglass.io/v2/weather/point?lat=${config.latitude}&lng=${config.longitude}&params=seaTemperature`,
+    `https://api.stormglass.io/v2/weather/point?lat=${config.latitude}&lng=${config.longitude}&params=waterTemperature`,
     {
       headers: {
         Authorization: config.apiKey,
@@ -22,7 +22,7 @@ const fetchSeaTemperature = async (config: {
   }
 
   const data = await response.json();
-  return data.hours[0].seaTemperature.sg;
+  return data.hours[0].waterTemperature.sg;
 };
 
 const Index = () => {
