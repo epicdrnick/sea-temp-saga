@@ -14,6 +14,9 @@ boot: auto
 ingress: true
 panel_icon: mdi:waves
 init: false
+auth_api: true
+hassio_api: true
+homeassistant_api: true
 options:
   api_key: ""
   latitude: "0"

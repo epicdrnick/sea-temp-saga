@@ -22,7 +22,27 @@ const fetchSeaTemperature = async (config: {
   }
 
   const data = await response.json();
-  return data.hours[0].waterTemperature.sg;
+  const temperature = data.hours[0].waterTemperature.sg;
+
+  // Update Home Assistant sensor
+  await fetch("/api/hassio_ingress/sea_temperature", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      state: temperature,
+      attributes: {
+        unit_of_measurement: "°C",
+        friendly_name: "Sea Temperature",
+        latitude: config.latitude,
+        longitude: config.longitude,
+        last_updated: new Date().toISOString(),
+      },
+    }),
+  });
+
+  return temperature;
 };
 
 const Index = () => {
@@ -36,6 +56,7 @@ const Index = () => {
     queryKey: ["seaTemperature", config],
     queryFn: () => (config ? fetchSeaTemperature(config) : null),
     enabled: !!config,
+    refetchInterval: 3600000, // Refresh every hour
   });
 
   const handleConfigSave = (newConfig: {
