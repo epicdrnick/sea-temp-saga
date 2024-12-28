@@ -78,14 +78,19 @@ class StormglassSensor(SensorEntity):
             )
             response.raise_for_status()
             data = response.json()
-            self._attr_native_value = data["hours"][0]["waterTemperature"]["sg"]
-            self._calls_today += 1
-            self._attr_extra_state_attributes = {
-                "last_updated": datetime.now().isoformat(),
-                "api_calls_remaining": CALLS_PER_DAY - self._calls_today,
-                "latitude": self._latitude,
-                "longitude": self._longitude,
-            }
+            
+            if "hours" in data and len(data["hours"]) > 0:
+                self._attr_native_value = data["hours"][0]["waterTemperature"]["sg"]
+                self._calls_today += 1
+                self._attr_extra_state_attributes = {
+                    "last_updated": datetime.now().isoformat(),
+                    "api_calls_remaining": CALLS_PER_DAY - self._calls_today,
+                    "latitude": self._latitude,
+                    "longitude": self._longitude,
+                }
+            else:
+                _LOGGER.error("No temperature data available in the response")
+                self._attr_native_value = None
         except Exception as err:
             _LOGGER.error("Error fetching data: %s", err)
             self._attr_native_value = None
