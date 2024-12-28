@@ -1,21 +1,36 @@
-# Home Assistant Stormglass Sea Temperature Add-on
+# Home Assistant Stormglass Sea Temperature Integration
 
-This add-on integrates with the Stormglass API to display sea temperature data in Home Assistant.
+This integration allows you to monitor sea temperature data from Stormglass.io in Home Assistant.
 
 ## Installation
 
-1. Add this repository to your Home Assistant instance
-2. Install the "Stormglass Sea Temperature" add-on
-3. Configure your Stormglass API key and location coordinates
-4. Start the add-on
+### HACS Installation
+1. Open HACS in your Home Assistant instance
+2. Click on "Integrations"
+3. Click the three dots in the top right corner
+4. Select "Custom repositories"
+5. Add this repository URL and select "Integration" as the category
+6. Click "Add"
+7. Find "Stormglass Sea Temperature" in the integration list and click "Download"
+8. Restart Home Assistant
+
+### Manual Installation
+1. Copy the `custom_components/stormglass_temperature` directory to your Home Assistant's `custom_components` directory
+2. Restart Home Assistant
 
 ## Configuration
 
-The add-on requires the following configuration:
+1. Go to Settings -> Devices & Services
+2. Click "Add Integration"
+3. Search for "Stormglass Sea Temperature"
+4. Enter your Stormglass API key and location coordinates
 
-- `api_key`: Your Stormglass API key
-- `latitude`: The latitude of the location you want to monitor
-- `longitude`: The longitude of the location you want to monitor
+## Features
+
+- Displays sea temperature data from Stormglass.io
+- Updates every hour
+- Limited to 10 API calls per 24 hours
+- Shows remaining API calls in sensor attributes
 
 ## Support
 

@@ -1,0 +1,8 @@
+{
+    "name": "Stormglass Sea Temperature",
+    "render_readme": true,
+    "domain": "stormglass_temperature",
+    "documentation": "https://github.com/yourusername/ha-stormglass",
+    "issue_tracker": "https://github.com/yourusername/ha-stormglass/issues",
+    "homeassistant": "2023.8.0"
+}
