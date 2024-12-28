@@ -91,12 +91,14 @@ const Index = () => {
     enabled: !!config,
     refetchInterval: 3600000, // Refresh every hour
     retry: false,
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+    meta: {
+      onError: (error: Error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
     },
   });
 
