@@ -6,7 +6,11 @@ import logging
 from typing import Any
 
 import requests
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import (
+    SensorEntity,
+    SensorEntityDescription,
+    SensorDeviceClass,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_API_KEY,
@@ -16,6 +20,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.util import Throttle
 
 from .const import DOMAIN, SCAN_INTERVAL, CALLS_PER_DAY
@@ -33,25 +38,36 @@ async def async_setup_entry(
     longitude = config_entry.data[CONF_LONGITUDE]
 
     async_add_entities(
-        [StormglassSensor(api_key, latitude, longitude)],
+        [StormglassSensor(api_key, latitude, longitude, config_entry.entry_id)],
         True,
     )
 
 class StormglassSensor(SensorEntity):
     """Implementation of a Stormglass sensor."""
 
-    _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
     _attr_has_entity_name = True
-    _attr_name = "Sea Temperature"
-
-    def __init__(self, api_key: str, latitude: float, longitude: float) -> None:
+    _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
+    _attr_device_class = SensorDeviceClass.TEMPERATURE
+    
+    def __init__(self, api_key: str, latitude: float, longitude: float, entry_id: str) -> None:
         """Initialize the sensor."""
         self._api_key = api_key
         self._latitude = latitude
         self._longitude = longitude
         self._attr_unique_id = f"stormglass_temperature_{latitude}_{longitude}"
+        self._entry_id = entry_id
         self._calls_today = 0
         self._last_reset = datetime.now()
+        
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, entry_id)},
+            name="Stormglass Sea Temperature",
+            manufacturer="Stormglass.io",
+            model="Sea Temperature Sensor",
+        )
+        
+        self._attr_name = "Sea Temperature"
+        self._attr_native_value = None
 
     @Throttle(timedelta(seconds=SCAN_INTERVAL))
     def update(self) -> None:
