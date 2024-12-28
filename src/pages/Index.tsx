@@ -2,12 +2,39 @@ import React from "react";
 import ConfigForm from "@/components/ConfigForm";
 import SeaTemperature from "@/components/SeaTemperature";
 import { useQuery } from "@tanstack/react-query";
+import { useToast } from "@/components/ui/use-toast";
+
+const CALLS_PER_DAY = 10;
+const STORAGE_KEY = "stormglass_api_calls";
+
+interface ApiCallRecord {
+  timestamp: number;
+  count: number;
+}
 
 const fetchSeaTemperature = async (config: {
   apiKey: string;
   latitude: string;
   longitude: string;
 }) => {
+  // Check API call limits
+  const now = Date.now();
+  const storedData = localStorage.getItem(STORAGE_KEY);
+  let apiCallRecord: ApiCallRecord = storedData
+    ? JSON.parse(storedData)
+    : { timestamp: now, count: 0 };
+
+  // Reset counter if 24 hours have passed
+  if (now - apiCallRecord.timestamp > 24 * 60 * 60 * 1000) {
+    apiCallRecord = { timestamp: now, count: 0 };
+  }
+
+  // Check if limit reached
+  if (apiCallRecord.count >= CALLS_PER_DAY) {
+    throw new Error(`API call limit reached (${CALLS_PER_DAY} calls per 24 hours)`);
+  }
+
+  // Make API call
   const response = await fetch(
     `https://api.stormglass.io/v2/weather/point?lat=${config.latitude}&lng=${config.longitude}&params=waterTemperature`,
     {
@@ -20,6 +47,10 @@ const fetchSeaTemperature = async (config: {
   if (!response.ok) {
     throw new Error("Failed to fetch sea temperature");
   }
+
+  // Update API call counter
+  apiCallRecord.count += 1;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(apiCallRecord));
 
   const data = await response.json();
   const temperature = data.hours[0].waterTemperature.sg;
@@ -38,6 +69,7 @@ const fetchSeaTemperature = async (config: {
         latitude: config.latitude,
         longitude: config.longitude,
         last_updated: new Date().toISOString(),
+        api_calls_remaining: CALLS_PER_DAY - apiCallRecord.count,
       },
     }),
   });
@@ -51,12 +83,21 @@ const Index = () => {
     latitude: string;
     longitude: string;
   } | null>(null);
+  const { toast } = useToast();
 
   const { data: temperature, isLoading, error } = useQuery({
     queryKey: ["seaTemperature", config],
     queryFn: () => (config ? fetchSeaTemperature(config) : null),
     enabled: !!config,
     refetchInterval: 3600000, // Refresh every hour
+    retry: false,
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   const handleConfigSave = (newConfig: {
